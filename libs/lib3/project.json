@@ -1,0 +1,96 @@
+{
+  "name": "lib3",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/lib3/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build-angular": {
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/lib3/ng-package.json",
+        "tailwindConfig": "libs/lib3/tailwind.config.js"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/lib3/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/lib3/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build-themes": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}/themes"],
+      "configurations": {
+        "production": {
+          "commands": [
+            "tailwindcss -c libs/lib3/tailwind.config.js -i ./libs/lib3/src/styles/teal.css -o ./dist/libs/lib3/themes/teal.css -m",
+            "tailwindcss -c libs/lib3/tailwind.config.js -i ./libs/lib3/src/styles/indigo.css -o ./dist/libs/lib3/themes/indigo.css -m"
+          ]
+        },
+        "development": {
+          "commands": [
+            "tailwindcss -c libs/lib3/tailwind.config.js -i ./libs/lib3/src/styles/teal.css -o ./dist/libs/lib3/themes/teal.css",
+            "tailwindcss -c libs/lib3/tailwind.config.js -i ./libs/lib3/src/styles/indigo.css -o ./dist/libs/lib3/themes/indigo.css"
+          ]
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build-lib": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "configurations": {
+        "production": {
+          "commands": [
+            "nx run lib3:build-angular:production",
+            "nx run lib3:build-themes:production"
+          ]
+        },
+        "development": {
+          "commands": [
+            "nx run lib3:build-angular:development",
+            "nx run lib3:build-themes:development"
+          ]
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "configurations": {
+        "production": {
+          "commands": [
+            "rmdir /s /q dist\\libs\\lib3",
+            "nx run lib3:build-lib:production"
+          ],
+          "parallel": false
+        },
+        "development": {
+          "commands": [
+            "rmdir /s /q dist\\libs\\lib3",
+            "nx run lib3:build-lib:development"
+          ],
+          "parallel": false
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/lib3/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
